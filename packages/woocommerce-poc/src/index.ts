@@ -155,7 +155,6 @@ const wooCommerce: WooCommerce = {
        */
       addItemToCart: ({ state }) => async ({ id, quantity }) => {
         const {data} = await CoCart.post('cart/add-item', {id: id.toString(), quantity: quantity.toString()})
-        console.log('add-item', data)
         state.woocommerce.cart = data;
       },
 
@@ -165,18 +164,9 @@ const wooCommerce: WooCommerce = {
        * @param key - The key of the cart item to remove.
        */
       removeItemFromCart: ({ state }) => async ({ key }) => {
-
-
-
-
-        state.woocommerce.cart = await storeApi({
-          state,
-          endpoint: "cart/remove-item",
-          method: "POST",
-          params: { key },
-        });
+        const { data } = await CoCart.delete('cart/item/' + key)
+        state.woocommerce.cart = data
       },
-
       /**
        * Update an item in the cart.
        *
@@ -184,18 +174,8 @@ const wooCommerce: WooCommerce = {
        * @param quantity - Quantity of this item in the cart.
        */
       updateItemFromCart: ({ state }) => async ({ key, quantity }) => {
-        // Update item quantity in the state.
-        state.woocommerce.cart.items.find(
-          (item) => item.key === key
-        ).quantity = quantity;
-
-        // Update cart in the backend.
-        state.woocommerce.cart = await storeApi({
-          state,
-          endpoint: "cart/update-item",
-          method: "POST",
-          params: { key, quantity },
-        });
+        const { data } = await CoCart.post('cart/item/' + key, {quantity})
+        state.woocommerce.cart = data
       },
 
       /**
