@@ -30,37 +30,34 @@ const Cart: React.FC<{ when?: boolean }> = () => {
         {cart.items.map((item) => (
           <Item key={item.item_key}>
             <ItemImage>
-              <img src={item.images[0].thumbnail} alt="" />
+              <img src={item.featured_image} alt="" />
             </ItemImage>
             <ItemProduct>
               <ItemTitle link={item.permalink}>{item.name}</ItemTitle>
-              <ItemDescription
-                dangerouslySetInnerHTML={{ __html: item.short_description }}
-              />
               <ItemRemove
-                onClick={() => actions.woocommerce.removeItemFromCart(item)}
+                onClick={() => actions.woocommerce.removeItemFromCart({ key: item.id.toString() })}
               >
                 ×
               </ItemRemove>
             </ItemProduct>
             <StyledItemQuantity item={item} />
             <ItemTotal>
-              {item.prices.price !== item.prices.regular_price && (
+              {item.price_discounted !== '0.00' && (
                 <ItemRegularPrice>
                   <del>
                     {renderPrice({
-                      quantity: item.quantity,
-                      amount: item.prices.regular_price,
-                      currency: item.prices,
+                      quantity: item.quantity.value,
+                      amount: item.price_regular,
+                      currency: cart.currency,
                     })}
                   </del>
                 </ItemRegularPrice>
               )}
               <ItemPrice>
                 {renderPrice({
-                  quantity: item.quantity,
-                  amount: item.prices.price,
-                  currency: item.prices,
+                  quantity: item.quantity.value,
+                  amount: item.price,
+                  currency: cart.currency,
                 })}
               </ItemPrice>
             </ItemTotal>
@@ -70,8 +67,8 @@ const Cart: React.FC<{ when?: boolean }> = () => {
           <TotalTitle>Total</TotalTitle>
           <TotalAmount>
             {renderPrice({
-              amount: cart.totals.total_price,
-              currency: cart.totals,
+              amount: cart.totals.total,
+              currency: cart.currency,
             })}
           </TotalAmount>
         </Total>

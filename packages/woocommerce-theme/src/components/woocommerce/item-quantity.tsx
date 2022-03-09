@@ -13,10 +13,10 @@ const ItemQuantity: React.FC<{ item: CartItem }> = ({ item }) => {
       min="1"
       max=""
       name="quantity"
-      value={item.quantity}
+      value={item.quantity.value}
       onChange={(event) => {
         actions.woocommerce.updateItemFromCart({
-          key: item.key,
+          key: item.item_key,
           quantity: parseInt(event.target.value, 10) || 0,
         });
       }}
