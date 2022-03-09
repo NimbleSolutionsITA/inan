@@ -35,7 +35,7 @@ const Cart: React.FC<{ when?: boolean }> = () => {
             <ItemProduct>
               <ItemTitle link={item.permalink}>{item.name}</ItemTitle>
               <ItemRemove
-                onClick={() => actions.woocommerce.removeItemFromCart({ key: item.id.toString() })}
+                onClick={() => actions.woocommerce.removeItemFromCart({ key: item.item_key })}
               >
                 ×
               </ItemRemove>
