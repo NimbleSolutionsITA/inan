@@ -55,8 +55,11 @@ const storeApi = async <Result = unknown>({
   body = undefined,
 }: StoreApiPayload): Promise<Result> => {
   const searchParams = new URLSearchParams(params);
+
+  console.log(state.CoCart)
+
   const response = await fetch(
-    `${state.wpSource.api}wc/store/${endpoint}?${searchParams}`,
+    `${state.wpSource.api}cocart/v2/${endpoint}?${searchParams}`,
     {
       method,
       credentials: "include",

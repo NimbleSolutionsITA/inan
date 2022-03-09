@@ -5,6 +5,13 @@ import CartHandler from "./handlers/cart";
 import CheckoutHandler from "./handlers/checkout";
 import OrderHandler from "./handlers/order";
 import storeApi from "./store-api";
+import CoCartAPI from "@cocart/cocart-rest-api";
+
+const CoCart = new CoCartAPI({
+  consumerKey: '',
+  consumerSecret: '',
+  url: 'https://inan.nimble-lab.com'
+})
 
 const wooCommerce: WooCommerce = {
   name: "woocommerce",
@@ -27,60 +34,73 @@ const wooCommerce: WooCommerce = {
        * create our own data structure.
        */
       cart: {
+        cart_hash: '',
+        cart_key: '',
+        cross_sells: [],
         coupons: [],
-        shipping_rates: [],
-        shipping_address: {
-          first_name: "",
-          last_name: "",
-          company: "",
-          address_1: "",
-          address_2: "",
-          city: "",
-          state: "",
-          postcode: "",
-          country: "",
+        currency: {
+          currency_code: '',
+          currency_decimal_separator: '',
+          currency_minor_unit: 0,
+          currency_prefix: '',
+          currency_suffix: '',
+          currency_symbol: '',
+          currency_thousand_separator: '',
         },
-        billing_address: {
-          first_name: "",
-          last_name: "",
-          company: "",
-          address_1: "",
-          address_2: "",
-          city: "",
-          state: "",
-          postcode: "",
-          country: "",
-          email: "",
-          phone: "",
+        customer: {
+          billing_address: {
+            billing_address_1: '',
+            billing_address_2: '',
+            billing_city: '',
+            billing_company: '',
+            billing_country: '',
+            billing_email: '',
+            billing_eu_vat_number: '',
+            billing_first_name: '',
+            billing_last_name: '',
+            billing_phone: '',
+            billing_postcode: '',
+            billing_state:'',
+          },
+          shipping_address: {
+            shipping_address_1: '',
+            shipping_address_2: '',
+            shipping_city: '',
+            shipping_company: '',
+            shipping_country: '',
+            shipping_first_name: '',
+            shipping_last_name: '',
+            shipping_postcode: '',
+            shipping_state:'',
+          }
         },
+        fees:[],
+        item_count: 0,
         items: [],
-        items_count: 0,
         items_weight: 0,
         needs_payment: false,
         needs_shipping: false,
-        has_calculated_shipping: false,
-        totals: {
-          total_items: "0",
-          total_items_tax: "",
-          total_fees: "0",
-          total_fees_tax: "",
-          total_discount: "0",
-          total_discount_tax: "0",
-          total_shipping: "",
-          total_shipping_tax: "",
-          total_price: "",
-          total_tax: "",
-          tax_lines: [],
-          currency_code: "",
-          currency_symbol: "",
-          currency_minor_unit: 0,
-          currency_decimal_separator: "",
-          currency_thousand_separator: "",
-          currency_prefix: "",
-          currency_suffix: "",
+        notices: [],
+        removed_items: [],
+        shipping: {
+          has_calculated_shipping: false,
+          packages: {},
+          show_package_details: false,
+          total_packages: 0
         },
-        errors: [],
-        extensions: {},
+        taxes: [],
+        totals: {
+          discount_tax: '',
+          discount_total: '',
+          fee_tax: '',
+          fee_total: '',
+          shipping_tax: '',
+          shipping_total: '',
+          subtotal: '',
+          subtotal_tax: '',
+          total: '',
+          total_tax: '',
+        }
       },
 
       /**
@@ -122,7 +142,8 @@ const wooCommerce: WooCommerce = {
        * syncronization to inform the theme that the cart is ready to be shown.
        */
       getCart: async ({ state }) => {
-        state.woocommerce.cart = await storeApi({ state, endpoint: "cart" });
+        const {data} = await CoCart.get('cart')
+        state.woocommerce.cart =  data;
         state.woocommerce.isCartReady = true;
       },
 
@@ -133,12 +154,9 @@ const wooCommerce: WooCommerce = {
        * @param quantity - Quantity of this item in the cart.
        */
       addItemToCart: ({ state }) => async ({ id, quantity }) => {
-        state.woocommerce.cart = await storeApi({
-          state,
-          endpoint: "cart/add-item",
-          method: "POST",
-          params: { id, quantity },
-        });
+        const {data} = await CoCart.post('cart/add-item', {id: id.toString(), quantity: quantity.toString()})
+        console.log('add-item', data)
+        state.woocommerce.cart = data;
       },
 
       /**
@@ -147,6 +165,10 @@ const wooCommerce: WooCommerce = {
        * @param key - The key of the cart item to remove.
        */
       removeItemFromCart: ({ state }) => async ({ key }) => {
+
+
+
+
         state.woocommerce.cart = await storeApi({
           state,
           endpoint: "cart/remove-item",
@@ -214,7 +236,7 @@ const wooCommerce: WooCommerce = {
         billingAddress = {},
         shippingAddress = {},
       }) => {
-        const { billing_address, shipping_address } = state.woocommerce.cart;
+        const { billing_address, shipping_address } = state.woocommerce.cart.customer;
 
         // Update the current state.
         Object.assign(billing_address, billingAddress);
@@ -254,7 +276,7 @@ const wooCommerce: WooCommerce = {
        */
       placeOrder: ({ state, actions }) => async ({ payment_data } = {}) => {
         const { payment_method, customer_note } = state.woocommerce.checkout;
-        const { billing_address, shipping_address } = state.woocommerce.cart;
+        const { billing_address, shipping_address } = state.woocommerce.cart.customer;
 
         // Get the checkout result from the REST API.
         const checkout: Checkout = await storeApi({

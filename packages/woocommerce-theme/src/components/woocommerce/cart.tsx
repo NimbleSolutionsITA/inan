@@ -21,14 +21,14 @@ const Cart: React.FC<{ when?: boolean }> = () => {
   if (!isCartReady) return <Loading />;
 
   // If cart is empty, return a message and a "go to shop" button.
-  if (cart.items_count === 0) return <GoToShop />;
+  if (cart.item_count === 0) return <GoToShop />;
 
   return (
     <Container>
-      <Title>Your cart ({cart.items_count} items)</Title>
+      <Title>Your cart ({cart.item_count} items)</Title>
       <div>
         {cart.items.map((item) => (
-          <Item key={item.key}>
+          <Item key={item.item_key}>
             <ItemImage>
               <img src={item.images[0].thumbnail} alt="" />
             </ItemImage>

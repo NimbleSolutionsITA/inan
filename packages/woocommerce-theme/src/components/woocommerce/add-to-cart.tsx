@@ -17,12 +17,19 @@ const AddToCart: React.FC<AddToCartProps> = ({
   const { state, actions } = useConnect<Packages>();
 
   // Get required props from the product.
-  const { type, id, add_to_cart } = product;
-  const { text, description, url } = add_to_cart;
+  const {
+    type,
+    id,
+    add_to_cart: {
+      text,
+      description,
+      url
+    }
+  } = product;
 
   // Get the item and its current quantity.
   const item = state.woocommerce.cart.items.find((p) => p.id === id);
-  const currentQuantity = item?.quantity || 0;
+  const currentQuantity = item?.quantity.value || 0;
 
   // Save an internal counter. The value in the cart is updated when the button
   // is clicked.
@@ -61,7 +68,7 @@ const AddToCart: React.FC<AddToCartProps> = ({
           <Button title={description} disabled={isPending} onClick={addToCart}>
             {isPending ? "Adding to cart..." : text}
           </Button>
-          <Quantity css={{ opacity: currentQuantity ? 1 : 0 }}>
+          <Quantity style={{ opacity: currentQuantity ? 1 : 0 }}>
             {currentQuantity}
           </Quantity>
         </ButtonContainer>

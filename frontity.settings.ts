@@ -3,13 +3,20 @@ import Source from "@frontity/source/types";
 import WooCommerce from "woocommerce-poc/types";
 import WooCommerceTheme from "woocommerce-theme/types";
 
+const {
+  NAME,
+  TITLE,
+  DESCRIPTION,
+  URL,
+} = process.env
+
 const settings: Settings<Source | WooCommerce | WooCommerceTheme> = {
-  name: "woocommerce-poc",
+  name: NAME,
   state: {
     frontity: {
-      url: "https://woocommerce.frontity.org",
-      title: "WooCommerce & Frontity",
-      description: "A proof of concept of Frontity and WooCommerce together",
+      url: URL,
+      title: TITLE,
+      description: DESCRIPTION,
     },
   },
   packages: [
@@ -29,7 +36,7 @@ const settings: Settings<Source | WooCommerce | WooCommerceTheme> = {
       name: "@frontity/wp-source",
       state: {
         source: {
-          url: "https://woocommerce.frontity.org",
+          url: URL
         },
       },
     },

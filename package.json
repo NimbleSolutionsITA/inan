@@ -13,7 +13,8 @@
   "scripts": {
     "dev": "frontity dev",
     "build": "frontity build",
-    "serve": "frontity serve"
+    "serve": "frontity serve --port $(grep PORT .env | cut -d '=' -f2)",
+    "start": "git pull && npm install && frontity build && frontity serve --port $(grep PORT .env | cut -d '=' -f2)"
   },
   "prettier": {
     "trailingComma": "es5",
@@ -25,6 +26,7 @@
   "dependencies": {
     "@changesets/changelog-github": "^0.4.3",
     "@changesets/cli": "^2.21.1",
+    "@cocart/cocart-rest-api": "^1.1.0",
     "@frontity/core": "^1.15.0",
     "@frontity/html2react": "^1.7.0",
     "@frontity/source": "^1.5.2",
